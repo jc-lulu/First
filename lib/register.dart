@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:my_app/main.dart';
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+  final List<Map<String, String>> registeredUsers;
+
+  const RegisterPage({Key? key, required this.registeredUsers})
+      : super(key: key);
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final _formkey = GlobalKey<FormState>();
-  final TextEditingController _emailcontroller = TextEditingController();
-  final TextEditingController _passwordcontroller = TextEditingController();
-  final TextEditingController _confirmpasswordcontroller =
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
       TextEditingController();
-
-  // A list to store the registered users
-  List<Map<String, String>> registeredUsers = [];
 
   // Regular expressions for validation
   final RegExp emailRegExp =
@@ -25,23 +25,26 @@ class _RegisterPageState extends State<RegisterPage> {
       RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$');
 
   void _register() {
-    if (_formkey.currentState!.validate()) {
-      if (_passwordcontroller.text == _confirmpasswordcontroller.text) {
+    if (_formKey.currentState!.validate()) {
+      if (_passwordController.text == _confirmPasswordController.text) {
         // Store user input in the registeredUsers list
-        registeredUsers.add({
-          'email': _emailcontroller.text,
-          'password': _passwordcontroller.text,
+        widget.registeredUsers.add({
+          'email': _emailController.text,
+          'password': _passwordController.text,
         });
 
         // Clear the text fields after registration
-        _emailcontroller.clear();
-        _passwordcontroller.clear();
-        _confirmpasswordcontroller.clear();
+        _emailController.clear();
+        _passwordController.clear();
+        _confirmPasswordController.clear();
 
         // Show a success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Account created successfully!')),
         );
+
+        // Navigate back to login page
+        Navigator.pop(context);
       } else {
         // Show an error message if passwords do not match
         ScaffoldMessenger.of(context).showSnackBar(
@@ -62,26 +65,19 @@ class _RegisterPageState extends State<RegisterPage> {
       body: Padding(
         padding: const EdgeInsets.all(50.0),
         child: Form(
-          key: _formkey,
+          key: _formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const Text(
-                "Create Account",
-                style: TextStyle(fontSize: 45),
-              ),
-              const Text(
-                "Enter your email and Password for sign up",
-                style: TextStyle(fontSize: 20, color: Colors.black54),
-              ),
+              const Text("Create Account", style: TextStyle(fontSize: 45)),
+              const Text("Enter your email and Password for sign up",
+                  style: TextStyle(fontSize: 20, color: Colors.black54)),
               const SizedBox(height: 20),
               TextFormField(
-                controller: _emailcontroller,
+                controller: _emailController,
                 decoration: const InputDecoration(
                   contentPadding: EdgeInsets.all(20),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(),
-                  ),
+                  border: OutlineInputBorder(borderSide: BorderSide()),
                   labelText: 'Email',
                   prefixIcon: Icon(Icons.mail),
                 ),
@@ -96,13 +92,11 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-                controller: _passwordcontroller,
+                controller: _passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(
                   contentPadding: EdgeInsets.all(20),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(),
-                  ),
+                  border: OutlineInputBorder(borderSide: BorderSide()),
                   labelText: 'Password',
                   prefixIcon: Icon(Icons.lock),
                 ),
@@ -117,13 +111,11 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-                controller: _confirmpasswordcontroller,
+                controller: _confirmPasswordController,
                 obscureText: true,
                 decoration: const InputDecoration(
                   contentPadding: EdgeInsets.all(20),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(),
-                  ),
+                  border: OutlineInputBorder(borderSide: BorderSide()),
                   labelText: 'Confirm Password',
                   prefixIcon: Icon(Icons.lock),
                 ),
@@ -145,7 +137,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     backgroundColor: Colors.green[600],
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5), //
+                      borderRadius: BorderRadius.circular(5),
                     ),
                   ),
                 ),
@@ -154,16 +146,11 @@ class _RegisterPageState extends State<RegisterPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    "Already have an account?",
-                    style: TextStyle(fontSize: 15),
-                  ),
+                  const Text("Already have an account?",
+                      style: TextStyle(fontSize: 15)),
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const MyHomePage()));
+                      Navigator.pop(context);
                     },
                     child: const Text('Log In',
                         style: TextStyle(

@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(),
+      home: MyHomePage(),
     );
   }
 }
@@ -29,20 +29,22 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final _formkey = GlobalKey<FormState>();
-  final TextEditingController _emailcontroller = TextEditingController();
-  final TextEditingController _passwordcontroller = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
-  // Dummy list of registered users (should ideally come from a database or server)
   List<Map<String, String>> registeredUsers = [];
 
   void _login() {
-    if (_formkey.currentState!.validate()) {
-      String enteredEmail = _emailcontroller.text.trim();
-      String enteredPassword = _passwordcontroller.text.trim();
+    if (_formKey.currentState!.validate()) {
+      String enteredEmail = _emailController.text.trim();
+      String enteredPassword = _passwordController.text.trim();
 
-      // Validate against hardcoded credentials for demonstration
-      if (enteredEmail == 'ced@gmail.com' && enteredPassword == 'Ced123') {
+      // Check if the entered email and password match any registered user
+      bool isAuthenticated = registeredUsers.any((user) =>
+          user['email'] == enteredEmail && user['password'] == enteredPassword);
+
+      if (isAuthenticated) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -50,7 +52,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         );
       } else {
-        // Show an error message if credentials are incorrect
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Invalid email or password. Please try again.'),
@@ -74,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Padding(
             padding: const EdgeInsets.all(50.0),
             child: Form(
-              key: _formkey,
+              key: _formKey,
               child: Column(
                 children: [
                   const Text(
@@ -87,19 +88,23 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
-                    controller: _emailcontroller,
+                    controller: _emailController,
                     decoration: const InputDecoration(
                       contentPadding: EdgeInsets.all(20),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(),
-                      ),
+                      border: OutlineInputBorder(borderSide: BorderSide()),
                       labelText: 'Email',
                       prefixIcon: Icon(Icons.mail),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your email';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
-                    controller: _passwordcontroller,
+                    controller: _passwordController,
                     obscureText: true,
                     decoration: const InputDecoration(
                       contentPadding: EdgeInsets.all(20),
@@ -107,15 +112,19 @@ class _MyHomePageState extends State<MyHomePage> {
                       labelText: 'Password',
                       prefixIcon: Icon(Icons.lock),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your password';
+                      }
+                      return null;
+                    },
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
                   SizedBox(
                     width: 500.0,
                     height: 50.0,
                     child: ElevatedButton(
-                      onPressed: _login, // Call _login function on button press
+                      onPressed: _login,
                       child: const Text('Login'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green[600],
@@ -149,18 +158,25 @@ class _MyHomePageState extends State<MyHomePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        "Don't have an account?",
-                        style: TextStyle(fontSize: 15),
-                      ),
+                      const Text("Don't have an account?",
+                          style: TextStyle(fontSize: 15)),
                       TextButton(
-                        onPressed: () {
-                          Navigator.push(
+                        onPressed: () async {
+                          // Navigate to RegisterPage and get back registeredUsers
+                          final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const RegisterPage(),
+                              builder: (context) => RegisterPage(
+                                  registeredUsers: registeredUsers),
                             ),
                           );
+
+                          // Update registeredUsers if any new user is added
+                          if (result != null) {
+                            setState(() {
+                              registeredUsers = result;
+                            });
+                          }
                         },
                         child: const Text(
                           'Create account',
@@ -182,3 +198,22 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+// class ProfilePage extends StatelessWidget {
+//   final String email;
+
+//   const ProfilePage({Key? key, required this.email}) : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: const Text("Profile Page"),
+//         backgroundColor: Colors.green[600],
+//       ),
+//       body: Center(
+//         child: Text("Welcome, $email!", style: TextStyle(fontSize: 24)),
+//       ),
+//     );
+//   }
+// }
