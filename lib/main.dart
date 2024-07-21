@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:my_app/widgets.dart'; // Assuming RegisterPage is imported from widgets.dart
@@ -44,29 +46,34 @@ class _MyHomePageState extends State<MyHomePage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  List<Map<String, String>> registeredUsers = [];
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
-  void _login() {
+  Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
-      String enteredEmail = _emailController.text.trim();
-      String enteredPassword = _passwordController.text.trim();
-
-      // Check if the entered email and password match any registered user
-      bool isAuthenticated = registeredUsers.any((user) =>
-          user['email'] == enteredEmail && user['password'] == enteredPassword);
-
-      if (isAuthenticated) {
-        Navigator.pushNamed(
-          context,
-          '/profile',
-          arguments: enteredEmail, // Pass the email as an argument
+      try {
+        UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
         );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Invalid email or password. Please try again.'),
+
+        // Navigate to the profile page if login is successful
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                ProfilePage(email: _emailController.text.trim()),
           ),
+        );
+      } on FirebaseAuthException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login failed: ${e.message}')),
         );
       }
     }
@@ -173,21 +180,19 @@ class _MyHomePageState extends State<MyHomePage> {
                           style: TextStyle(fontSize: 15)),
                       TextButton(
                         onPressed: () async {
-                          // Navigate to RegisterPage and get back registeredUsers
+                          // Navigate to RegisterPage
                           final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => RegisterPage(
-                                  registeredUsers: registeredUsers),
+                              builder: (context) => const RegisterPage(
+                                registeredUsers: [],
+                              ),
                             ),
                           );
-
-                          // Update registeredUsers if any new user is added
-                          if (result != null) {
-                            setState(() {
-                              registeredUsers = result;
-                            });
+                          if (result == true) {
+                            // Update state or perform any actions if necessary
                           }
+                          // Update registeredUsers if any new user is added
                         },
                         child: const Text(
                           'Create account',
