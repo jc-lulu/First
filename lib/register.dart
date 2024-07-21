@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:my_app/user_path/firebase_auth_implementation/firebase_auth_services.dart';
 
 class RegisterPage extends StatefulWidget {
   final List<Map<String, String>> registeredUsers;
@@ -10,6 +12,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final FirebaseAuthService _auth = FirebaseAuthService();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -21,36 +24,6 @@ class _RegisterPageState extends State<RegisterPage> {
       RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
   final RegExp passwordRegExp =
       RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$');
-
-  void _register() {
-    if (_formKey.currentState!.validate()) {
-      if (_passwordController.text == _confirmPasswordController.text) {
-        // Store user input in the registeredUsers list
-        widget.registeredUsers.add({
-          'email': _emailController.text,
-          'password': _passwordController.text,
-        });
-
-        // Clear the text fields after registration
-        _emailController.clear();
-        _passwordController.clear();
-        _confirmPasswordController.clear();
-
-        // Show a success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Account created successfully!')),
-        );
-
-        // Navigate back to login page
-        Navigator.pop(context);
-      } else {
-        // Show an error message if passwords do not match
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Passwords do not match!')),
-        );
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +102,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 width: 500.0,
                 height: 50.0,
                 child: ElevatedButton(
-                  onPressed: _register,
+                  onPressed: _signUp,
                   child: const Text('Create Account'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green[600],
@@ -164,5 +137,19 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
     );
+  }
+
+  void _signUp() async {
+    String email = _emailController.text;
+    String password = _passwordController.text;
+
+    User? user = await _auth.signUpWithEmailAndPassword(email, password);
+
+    if (email != null) {
+      print("User is successfull created");
+      Navigator.pop(context); // Navigate back to login screen
+    } else {
+      print("Some errorhappen");
+    }
   }
 }

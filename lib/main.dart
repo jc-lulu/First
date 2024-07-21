@@ -57,11 +57,10 @@ class _MyHomePageState extends State<MyHomePage> {
           user['email'] == enteredEmail && user['password'] == enteredPassword);
 
       if (isAuthenticated) {
-        Navigator.pushReplacement(
+        Navigator.pushNamed(
           context,
-          MaterialPageRoute(
-            builder: (context) => ProfilePage(email: enteredEmail),
-          ),
+          '/profile',
+          arguments: enteredEmail, // Pass the email as an argument
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -210,22 +209,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-// class ProfilePage extends StatelessWidget {
-//   final String email;
-
-//   const ProfilePage({Key? key, required this.email}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text("Profile Page"),
-//         backgroundColor: Colors.green[600],
-//       ),
-//       body: Center(
-//         child: Text("Welcome, $email!", style: TextStyle(fontSize: 24)),
-//       ),
-//     );
-//   }
-// }

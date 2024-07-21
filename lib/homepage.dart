@@ -2,20 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:my_app/main.dart';
 
 class ProfilePage extends StatelessWidget {
-  final String email;
-
-  const ProfilePage({required this.email});
-
-  void _logout(BuildContext context) {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => MyHomePage()),
-      (Route<dynamic> route) => false,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final String email = ModalRoute.of(context)!.settings.arguments as String;
+
+    void _logout(BuildContext context) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => MyHomePage()),
+        (Route<dynamic> route) => false,
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile Page'),
