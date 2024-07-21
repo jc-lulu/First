@@ -1,7 +1,19 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:my_app/widgets.dart'; // Assuming RegisterPage is imported from widgets.dart
 
-void main() {
+Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+        options: const FirebaseOptions(
+            apiKey: "AIzaSyB0dDMiZb-0zRdiePQUcKXsIZ3i6NVul18",
+            appId: "1:418598477332:web:f68b5cb7df5578a5dcd101",
+            messagingSenderId: "418598477332",
+            projectId: "loginapp01-26c29"));
+  }
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -16,7 +28,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }

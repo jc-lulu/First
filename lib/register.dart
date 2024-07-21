@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:my_app/main.dart';
 
 class RegisterPage extends StatefulWidget {
   final List<Map<String, String>> registeredUsers;
 
-  const RegisterPage({Key? key, required this.registeredUsers})
-      : super(key: key);
+  const RegisterPage({super.key, required this.registeredUsers});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
