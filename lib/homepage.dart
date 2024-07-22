@@ -18,7 +18,10 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile Page'),
+        title: const Text(
+          'Profile Page',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.green[600],
         automaticallyImplyLeading: false, // This removes the back button
       ),

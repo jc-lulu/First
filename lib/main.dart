@@ -207,7 +207,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           borderRadius: BorderRadius.circular(5),
                         ),
                       ),
-                      child: const Text('Login'),
+                      child: const Text(
+                        'Login',
+                        style: TextStyle(fontSize: 20),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -215,16 +218,41 @@ class _MyHomePageState extends State<MyHomePage> {
                     width: 500.0,
                     height: 50.0,
                     child: ElevatedButton(
-                      onPressed: _signInWithGoogle,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            const Color.fromARGB(255, 253, 253, 253),
-                        foregroundColor: const Color.fromARGB(255, 1, 0, 0),
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5),
                         ),
                       ),
-                      child: const Text('Sign in with Google'),
+                      onPressed: () {
+                        _signInWithGoogle();
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image(
+                              image: AssetImage("../images/google.jpg"),
+                              height: 30.0,
+                              width: 30,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 24, right: 8),
+                              child: Text(
+                                'Sign in with Google',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black54,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),
