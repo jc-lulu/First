@@ -1,9 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:my_app/widgets.dart'; // Assuming RegisterPage is imported from widgets.dart
+import 'package:my_app/widgets.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'My Application',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -80,13 +82,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _signInWithGoogle() async {
-    final GoogleSignIn _googleSignIn = GoogleSignIn(
+    final GoogleSignIn googleSignIn = GoogleSignIn(
       clientId:
           '418598477332-k7fphhii1kgcgnfboiq39sihsqgtsnqj.apps.googleusercontent.com',
     );
 
     try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
       if (googleUser == null) {
         return;
@@ -110,12 +112,17 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       );
     } catch (e) {
-      print("Error occurred during Google sign-in: $e");
+      if (kDebugMode) {
+        print("Error occurred during Google sign-in: $e");
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Sign-in failed: $e')),
       );
     }
   }
+
+  bool isPasswordVisible = false;
+  Icon passwordIcon = const Icon(Icons.visibility_off);
 
   @override
   Widget build(BuildContext context) {
@@ -161,13 +168,25 @@ class _MyHomePageState extends State<MyHomePage> {
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: _passwordController,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.all(20),
-                      border: OutlineInputBorder(),
-                      labelText: 'Password',
-                      prefixIcon: Icon(Icons.lock),
-                    ),
+                    obscureText: isPasswordVisible ? false : true,
+                    decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.all(20),
+                        border: const OutlineInputBorder(),
+                        labelText: 'Password',
+                        prefixIcon: const Icon(Icons.lock),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              isPasswordVisible = !isPasswordVisible;
+                              if (isPasswordVisible) {
+                                passwordIcon = const Icon(Icons.visibility);
+                              } else {
+                                passwordIcon = const Icon(Icons.visibility_off);
+                              }
+                            });
+                          },
+                          icon: passwordIcon,
+                        )),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your password';
@@ -181,7 +200,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: 50.0,
                     child: ElevatedButton(
                       onPressed: _login,
-                      child: const Text('Login'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green[600],
                         foregroundColor: Colors.white,
@@ -189,6 +207,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           borderRadius: BorderRadius.circular(5),
                         ),
                       ),
+                      child: const Text('Login'),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -197,7 +216,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: 50.0,
                     child: ElevatedButton(
                       onPressed: _signInWithGoogle,
-                      child: const Text('Sign in with Google'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
                             const Color.fromARGB(255, 253, 253, 253),
@@ -206,6 +224,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           borderRadius: BorderRadius.circular(5),
                         ),
                       ),
+                      child: const Text('Sign in with Google'),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -225,10 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                             ),
                           );
-                          if (result == true) {
-                            // Update state or perform any actions if necessary
-                          }
-                          // Update registeredUsers if any new user is added
+                          if (result == true) {}
                         },
                         child: const Text(
                           'Create account',
