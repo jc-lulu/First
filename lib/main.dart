@@ -81,14 +81,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _signInWithGoogle() async {
     final GoogleSignIn _googleSignIn = GoogleSignIn(
-      clientId: 'YOUR_CLIENT_ID.apps.googleusercontent.com',
+      clientId:
+          '418598477332-k7fphhii1kgcgnfboiq39sihsqgtsnqj.apps.googleusercontent.com',
     );
 
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
       if (googleUser == null) {
-        // User canceled the sign-in
         return;
       }
 
@@ -103,7 +103,6 @@ class _MyHomePageState extends State<MyHomePage> {
       UserCredential userCredential =
           await _auth.signInWithCredential(credential);
 
-      // Navigate to the profile page if sign-in is successful
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
